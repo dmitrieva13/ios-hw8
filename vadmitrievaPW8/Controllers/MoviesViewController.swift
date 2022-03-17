@@ -10,6 +10,8 @@ import UIKit
 class MoviesViewController: UIViewController {
     private let tableView = UITableView()
     private let apiKey = "554e7ac8416f0775b18600664214853d"
+    
+    var movies: [Movie]!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +43,23 @@ class MoviesViewController: UIViewController {
             return assertionFailure("some problems with url")
         }
         let session = URLSession.shared.dataTask(with: URLRequest(url: url), completionHandler: {data, _, _ in
-            
+            guard
+                let data = data,
+                let dict = try? JSONSerialization.jsonObject(with: data, options: .json5Allowed) as? [String: Any],
+                let result = dict["results"] as? [[String: Any]]
+            else {
+                    return
+                }
+            let movies: [Movie] = result.map { params in
+                let title = params["title"] as! String
+                let imagePath = params["poster_path"] as? String
+                return Movie(title: title, posterPath: imagePath, poster: nil)
+            }
+            print(movies)
+            self.movies = movies
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
         })
         session.resume()
     }
@@ -49,11 +67,13 @@ class MoviesViewController: UIViewController {
 
 extension MoviesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return movies.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return MovieView()
+        let cell = tableView.dequeueReusableCell(withIdentifier: MovieView.identifier, for: indexPath) as! MovieView
+        cell.configure(movie: movies[indexPath.row])
+        return cell
     }
 }
 
