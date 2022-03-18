@@ -22,6 +22,11 @@ class MovieView: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        configureUI()
+    }
+    
     private func configureUI() {
         poster.translatesAutoresizingMaskIntoConstraints = false
         title.translatesAutoresizingMaskIntoConstraints = false

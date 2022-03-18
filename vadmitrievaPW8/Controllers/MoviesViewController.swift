@@ -16,7 +16,7 @@ class MoviesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        view.backgroundColor = .white
+        tableView.backgroundColor = .white
         configureUI()
         DispatchQueue.global(qos: .background).async {
             [weak self] in
@@ -26,6 +26,7 @@ class MoviesViewController: UIViewController {
 
     private func configureUI() {
         view.addSubview(tableView)
+        tableView.delegate = self
         tableView.dataSource = self
         tableView.register(MovieView.self, forCellReuseIdentifier: MovieView.identifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -38,11 +39,26 @@ class MoviesViewController: UIViewController {
         tableView.reloadData()
     }
     
+    private func loadImagesForMovies(_ movies: [Movie], completion: @escaping ([Movie]) -> Void) {
+        let group = DispatchGroup()
+        for movie in movies {
+            group.enter()
+            DispatchQueue.global(qos: .background).async {
+                movie.loadPoster {_ in
+                    group.leave()
+                }
+            }
+        }
+        group.notify(queue: .main) {
+            completion(movies)
+        }
+    }
+    
     private func loadMovies() {
-        guard let url = URL(string: "https://api.themoviedb.org/3/ discover/movie?api_key=\(apiKey)&language=ruRU") else {
+        guard let url = URL(string: "https://api.themoviedb.org/3/discover/movie?api_key=\(apiKey)&language=ruRu") else {
             return assertionFailure("some problems with url")
         }
-        let session = URLSession.shared.dataTask(with: URLRequest(url: url), completionHandler: {data, _, _ in
+        let session = URLSession.shared.dataTask(with: URLRequest(url: url), completionHandler: {[weak self] data, _, _ in
             guard
                 let data = data,
                 let dict = try? JSONSerialization.jsonObject(with: data, options: .json5Allowed) as? [String: Any],
@@ -53,27 +69,35 @@ class MoviesViewController: UIViewController {
             let movies: [Movie] = result.map { params in
                 let title = params["title"] as! String
                 let imagePath = params["poster_path"] as? String
-                return Movie(title: title, posterPath: imagePath, poster: nil)
+                return Movie(title: title, posterPath: imagePath)
             }
-            print(movies)
-            self.movies = movies
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
+            self?.loadImagesForMovies(movies) { movies in
+                self?.movies = movies
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
             }
         })
         session.resume()
     }
 }
 
-extension MoviesViewController: UITableViewDataSource {
+extension MoviesViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movies.count
+        if movies != nil {
+            return movies.count
+        }
+        return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: MovieView.identifier, for: indexPath) as! MovieView
         cell.configure(movie: movies[indexPath.row])
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 250.0;//Choose your custom row height
     }
 }
 
