@@ -50,7 +50,6 @@ class SearchViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc func textFieldDidChange(_ textField: UITextField) {
-        print("did change")
         let searchRequest = textField.text ?? ""
         DispatchQueue.global(qos: .background).async {
             [weak self] in
