@@ -1,40 +1,47 @@
 //
-//  ViewController.swift
+//  SearchViewController.swift
 //  vadmitrievaPW8
 //
-//  Created by Varvara on 17.03.2022.
+//  Created by Varvara on 18.03.2022.
 //
 
 import UIKit
 
-class MoviesViewController: UIViewController {
+class SearchViewController: UIViewController, UITextFieldDelegate {
+    private let searchBar = UITextField(frame: CGRect(x: 0, y: 0, width: 300, height: 20))
     private let tableView = UITableView()
     private let apiKey = "554e7ac8416f0775b18600664214853d"
-    private let searchButton = UIButton(type: .system)
     
     var movies: [Movie]!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        view.backgroundColor = .white
         tableView.backgroundColor = .white
         configureUI()
-        DispatchQueue.global(qos: .background).async {
-            [weak self] in
-            self?.loadMovies()
-        }
     }
 
     private func configureUI() {
-        setupButton()
+        searchBar.isUserInteractionEnabled = true
+        searchBar.delegate = self
+        searchBar.backgroundColor = .lightGray
+        view.addSubview(searchBar)
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            searchBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
+            searchBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
+            searchBar.heightAnchor.constraint(equalToConstant: 30)
+        ])
+        searchBar.addTarget(self, action: #selector(SearchViewController.textFieldDidChange(_:)), for: .editingChanged)
+        
         view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(MovieView.self, forCellReuseIdentifier: MovieView.identifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
+            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 10),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
@@ -42,39 +49,19 @@ class MoviesViewController: UIViewController {
         tableView.reloadData()
     }
     
-    private func setupButton() {
-        view.addSubview(searchButton)
-        searchButton.setImage(UIImage(named: "search"), for: .normal)
-        searchButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            searchButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            searchButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -15),
-            searchButton.heightAnchor.constraint(equalToConstant: 25),
-            searchButton.widthAnchor.constraint(equalToConstant: 25)
-        ])
-        searchButton.addTarget(self, action: #selector(searchButtonPressed),
-        for: .touchUpInside)
+    @objc func textFieldDidChange(_ textField: UITextField) {
+        print("did change")
+        let searchRequest = textField.text ?? ""
+        DispatchQueue.global(qos: .background).async {
+            [weak self] in
+            self?.loadMovies(search: searchRequest)
+        }
     }
     
-    @objc
-    private func searchButtonPressed() {
-        navigationController?.pushViewController(SearchViewController(), animated: true)
-        /* switch buttonCount {
-        case 0, 1:
-            UIView.animate(withDuration: 0.1, animations: {
-                self.setView.alpha = 1 - self.setView.alpha
-            })
-        case 2:
-            navigationController?.pushViewController(
-                SettingsViewController(),
-                animated: true)
-        case 3:
-            present(SettingsViewController(), animated: true, completion: nil)
-        default:
-            buttonCount = -1
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+            self.view.endEditing(true)
+            return false
         }
-        buttonCount += 1*/
-    }
     
     private func loadImagesForMovies(_ movies: [Movie], completion: @escaping ([Movie]) -> Void) {
         let group = DispatchGroup()
@@ -91,8 +78,9 @@ class MoviesViewController: UIViewController {
         }
     }
     
-    private func loadMovies() {
-        guard let url = URL(string: "https://api.themoviedb.org/3/discover/movie?api_key=\(apiKey)&language=ruRu") else {
+    private func loadMovies(search: String) {
+        let request = search.replacingOccurrences(of: " ", with: "+")
+        guard let url = URL(string: "https://api.themoviedb.org/3/search/movie?api_key=\(apiKey)&query=\(request)") else {
             return assertionFailure("some problems with url")
         }
         let session = URLSession.shared.dataTask(with: URLRequest(url: url), completionHandler: {[weak self] data, _, _ in
@@ -119,7 +107,7 @@ class MoviesViewController: UIViewController {
     }
 }
 
-extension MoviesViewController: UITableViewDataSource, UITableViewDelegate {
+extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if movies != nil {
             return movies.count
@@ -137,4 +125,3 @@ extension MoviesViewController: UITableViewDataSource, UITableViewDelegate {
         return 250.0;//Choose your custom row height
     }
 }
-
