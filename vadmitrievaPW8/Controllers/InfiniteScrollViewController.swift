@@ -98,7 +98,9 @@ class InfiniteScrollViewController: UIViewController {
             let movies: [Movie] = result.map { params in
                 let title = params["title"] as! String
                 let imagePath = params["poster_path"] as? String
-                return Movie(title: title, posterPath: imagePath)
+                let id = params["id"] as! Int
+                let overview = params["overview"] as? String
+                return Movie(title: title, posterPath: imagePath, id: id, overview: overview)
             }
             self?.loadImagesForMovies(movies) { movies in
                 for movie in movies {
@@ -138,6 +140,13 @@ extension InfiniteScrollViewController: UITableViewDataSource, UITableViewDelega
                 loadMovies()
             }
         }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let movie = movies[indexPath.row]
+        let detailedVC = DetailedViewController()
+        detailedVC.configure(title: movie.title, posterImg: movie.poster ?? UIImage(), overview: movie.overview)
+        navigationController?.pushViewController(detailedVC, animated: true)
     }
 }
 

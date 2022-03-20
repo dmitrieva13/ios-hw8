@@ -17,6 +17,8 @@
 		F96258B927E52586005117FA /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96258B827E52586005117FA /* SearchViewController.swift */; };
 		F96258BB27E68D2D005117FA /* PagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96258BA27E68D2D005117FA /* PagesViewController.swift */; };
 		F96258BD27E76B74005117FA /* InfiniteScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96258BC27E76B74005117FA /* InfiniteScrollViewController.swift */; };
+		F96258BF27E7B3B4005117FA /* DetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96258BE27E7B3B4005117FA /* DetailedView.swift */; };
+		F96258C127E7B919005117FA /* DetailedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96258C027E7B919005117FA /* DetailedViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,8 @@
 		F96258B827E52586005117FA /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		F96258BA27E68D2D005117FA /* PagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagesViewController.swift; sourceTree = "<group>"; };
 		F96258BC27E76B74005117FA /* InfiniteScrollViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfiniteScrollViewController.swift; sourceTree = "<group>"; };
+		F96258BE27E7B3B4005117FA /* DetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedView.swift; sourceTree = "<group>"; };
+		F96258C027E7B919005117FA /* DetailedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +87,7 @@
 				F96258B827E52586005117FA /* SearchViewController.swift */,
 				F96258BA27E68D2D005117FA /* PagesViewController.swift */,
 				F96258BC27E76B74005117FA /* InfiniteScrollViewController.swift */,
+				F96258C027E7B919005117FA /* DetailedViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -91,6 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				F96258B327E3C9F5005117FA /* MovieView.swift */,
+				F96258BE27E7B3B4005117FA /* DetailedView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -174,6 +180,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F96258BB27E68D2D005117FA /* PagesViewController.swift in Sources */,
+				F96258BF27E7B3B4005117FA /* DetailedView.swift in Sources */,
+				F96258C127E7B919005117FA /* DetailedViewController.swift in Sources */,
 				F96258B927E52586005117FA /* SearchViewController.swift in Sources */,
 				F96258A227E3C685005117FA /* MoviesViewController.swift in Sources */,
 				F96258B427E3C9F5005117FA /* MovieView.swift in Sources */,

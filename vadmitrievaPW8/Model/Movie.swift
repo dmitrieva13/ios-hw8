@@ -11,10 +11,14 @@ class Movie {
     let title: String
     let posterPath: String?
     var poster: UIImage? = nil
+    let id: Int
+    let overview: String?
     
-    init(title: String, posterPath: String?){
+    init(title: String, posterPath: String?, id: Int, overview: String?) {
         self.title = title
         self.posterPath = posterPath
+        self.id = id
+        self.overview = overview
     }
     
     func loadPoster(completion: @escaping (UIImage?) -> Void) {

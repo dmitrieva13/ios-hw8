@@ -182,7 +182,9 @@ class PagesViewController: UIViewController {
             let movies: [Movie] = result.map { params in
                 let title = params["title"] as! String
                 let imagePath = params["poster_path"] as? String
-                return Movie(title: title, posterPath: imagePath)
+                let id = params["id"] as! Int
+                let overview = params["overview"] as? String
+                return Movie(title: title, posterPath: imagePath, id: id, overview: overview)
             }
             self?.loadImagesForMovies(movies) { movies in
                 self?.movies = movies

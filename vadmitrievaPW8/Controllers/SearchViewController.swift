@@ -93,7 +93,9 @@ class SearchViewController: UIViewController, UITextFieldDelegate {
             let movies: [Movie] = result.map { params in
                 let title = params["title"] as! String
                 let imagePath = params["poster_path"] as? String
-                return Movie(title: title, posterPath: imagePath)
+                let id = params["id"] as! Int
+                let overview = params["overview"] as? String
+                return Movie(title: title, posterPath: imagePath, id: id, overview: overview)
             }
             self?.loadImagesForMovies(movies) { movies in
                 self?.movies = movies
@@ -122,5 +124,12 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 250.0;//Choose your custom row height
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let movie = movies[indexPath.row]
+        let detailedVC = DetailedViewController()
+        detailedVC.configure(title: movie.title, posterImg: movie.poster ?? UIImage(), overview: movie.overview)
+        navigationController?.pushViewController(detailedVC, animated: true)
     }
 }
